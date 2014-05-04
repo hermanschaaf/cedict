@@ -12,15 +12,16 @@ caller's responsibility to ensure that r provides a CEDict-formatted dictionary.
         c := cedict.New(r)
 
 Given a CEDict c, the dictionary is tokenized by repeatedly calling c.Next(),
-which parses the next token and returns its contents as an Entry, or an error:
+which parses until it reaches the next entry, or an error if no more entries are found:
 
         for {
-                entry, err := c.Next()
-                if err != nil {
-                        // handle error...
-                        return ...
-                }
-                // Process the current entry.
+            err := c.NextEntry()
+            if err != nil {
+                break
+            }
+            // get current entry
+            entry := c.Entry()
+            fmt.Println(entry.Simplified, entry.Definitions[0])
         }
 
 To retrieve the current entry, the Entry method can be called. There is also
@@ -50,7 +51,7 @@ const (
 type CEDict struct {
 	*bufio.Scanner
 	TokenType int
-	Entry     *Entry
+	entry     *Entry
 }
 
 // Entry represents a single entry in the cedict dictionary.
@@ -67,13 +68,13 @@ type Entry struct {
 func consumeComment(data []byte) (int, []byte, error) {
 	var accum []byte
 	for i, b := range data {
-		if b == '\n' {
-			return i, accum, nil
+		if b == '\n' || i == len(data)-1 {
+			return i + 1, accum, nil
 		} else {
 			accum = append(accum, b)
 		}
 	}
-	return 0, nil, nil
+	return len(accum), accum, nil
 }
 
 // consumeEntry reads from the data byte slice until a new line is found.
@@ -83,12 +84,12 @@ func consumeEntry(data []byte) (int, []byte, error) {
 	var accum []byte
 	for i, b := range data {
 		if b == '\n' {
-			return i, accum, nil
+			return i + 1, accum, nil
 		} else {
 			accum = append(accum, b)
 		}
 	}
-	return 0, nil, nil
+	return len(accum), accum, nil
 }
 
 // New takes an io.Reader and creates a new CEDict instance.
@@ -143,21 +144,30 @@ func parseEntry(s string) (*Entry, error) {
 	return &e, nil
 }
 
-type NoMoreEntries error
+var NoMoreEntries error = errors.New("No more entries to read")
 
 // Next reads until the next entry token is found. Once found,
 // it parses the token and returns a pointer to a newly populated
 // Entry struct.
-func (c *CEDict) Next() error {
+func (c *CEDict) NextEntry() error {
 	for c.Scan() {
 		if c.TokenType == EntryToken {
 			e, err := parseEntry(c.Text())
 			if err != nil {
 				return err
 			}
-			c.Entry = e
+			c.entry = e
 			return nil
 		}
 	}
-	return NoMoreEntries(errors.New("No more entries to read"))
+	if err := c.Err(); err != nil {
+		return err
+	}
+
+	return NoMoreEntries
+}
+
+// Entry returns a pointer to the most recently parsed Entry struct.
+func (c *CEDict) Entry() *Entry {
+	return c.entry
 }
