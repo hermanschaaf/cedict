@@ -12,9 +12,8 @@ import (
 	"testing"
 )
 
-// ExampleCEDict demonstrates basic usage of the cedict package. It uses a string.Reader as
-// io.Reader, where normally you would use a file.Reader. Other than that, this demonstrates
-// typical usage.
+// The following example demonstrates basic usage of the package. It uses a
+// string.Reader as io.Reader, where you would normally use a file.Reader.
 func ExampleCEDict() {
 	dict := `一層 一层 [yi1 ceng2] /layer/
 一攬子 一揽子 [yi1 lan3 zi5] /all-inclusive/undiscriminating/`
