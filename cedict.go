@@ -9,9 +9,13 @@ Chinese dictionary project.
 Tokenizing is done by creating a CEDict for an io.Reader r. It is the
 caller's responsibility to ensure that r provides a CEDict-formatted dictionary.
 
-        c := cedict.New(r)
+        import "github.com/hermanschaaf/cedict"
 
-Given a CEDict c, the dictionary is tokenized by repeatedly calling c.Next(),
+        ...
+
+        c := cedict.New(r) // r is an io.Reader to the cedict file
+
+Given a CEDict c, the dictionary is tokenized by repeatedly calling c.NextEntry(),
 which parses until it reaches the next entry, or an error if no more entries are found:
 
         for {
@@ -19,15 +23,14 @@ which parses until it reaches the next entry, or an error if no more entries are
             if err != nil {
                 break
             }
-            // get current entry
             entry := c.Entry()
             fmt.Println(entry.Simplified, entry.Definitions[0])
         }
 
 To retrieve the current entry, the Entry method can be called. There is also
 a lower-level API available, using the bufio.Scanner Scan method. Using this
-API is the recommended way to read comments from the CEDict, should that
-be necessary.
+lower-level API is the recommended way to read comments from the CEDict, should
+that be necessary.
 */
 package cedict
 
