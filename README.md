@@ -48,4 +48,4 @@ that be necessary.
 
 ### Documentation
 
-Full documentation can be found at [https://godoc.org/github.com/hermanschaaf/japanese](https://godoc.org/github.com/hermanschaaf/cedict)
+Full documentation can be found at [https://godoc.org/github.com/hermanschaaf/cedict](https://godoc.org/github.com/hermanschaaf/cedict)
