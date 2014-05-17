@@ -68,14 +68,17 @@ type Entry struct {
 // consumeComment reads from the data byte slice until a new line is found,
 // returning the advanced steps, accumalated bytes and nil error if successful.
 // This is done in accordance to the SplitFunc type defined in bufio.
-func consumeComment(data []byte) (int, []byte, error) {
+func consumeComment(data []byte, atEOF bool) (int, []byte, error) {
 	var accum []byte
 	for i, b := range data {
-		if b == '\n' || i == len(data)-1 {
+		if b == '\n' || (atEOF && i == len(data)-1) {
 			return i + 1, accum, nil
 		} else {
 			accum = append(accum, b)
 		}
+	}
+	if atEOF {
+		return len(data), accum, nil
 	}
 	return 0, nil, nil
 }
@@ -83,7 +86,7 @@ func consumeComment(data []byte) (int, []byte, error) {
 // consumeEntry reads from the data byte slice until a new line is found.
 // It only returns the bytes found, and does not attempt to parse the actual
 // entry on the line.
-func consumeEntry(data []byte) (int, []byte, error) {
+func consumeEntry(data []byte, atEOF bool) (int, []byte, error) {
 	var accum []byte
 	for i, b := range data {
 		if b == '\n' {
@@ -91,6 +94,9 @@ func consumeEntry(data []byte) (int, []byte, error) {
 		} else {
 			accum = append(accum, b)
 		}
+	}
+	if atEOF {
+		return len(data), accum, nil
 	}
 	return 0, nil, nil
 }
@@ -104,10 +110,10 @@ func New(r io.Reader) *CEDict {
 	// splitFunc defines how we split our tokens
 	splitFunc := func(data []byte, atEOF bool) (advance int, token []byte, err error) {
 		if data[0] == '#' {
-			advance, token, err = consumeComment(data)
+			advance, token, err = consumeComment(data, atEOF)
 			c.TokenType = CommentToken
 		} else {
-			advance, token, err = consumeEntry(data)
+			advance, token, err = consumeEntry(data, atEOF)
 			c.TokenType = EntryToken
 		}
 		return
