@@ -77,7 +77,7 @@ func consumeComment(data []byte) (int, []byte, error) {
 			accum = append(accum, b)
 		}
 	}
-	return len(accum), accum, nil
+	return 0, nil, nil
 }
 
 // consumeEntry reads from the data byte slice until a new line is found.
@@ -92,7 +92,7 @@ func consumeEntry(data []byte) (int, []byte, error) {
 			accum = append(accum, b)
 		}
 	}
-	return len(accum), accum, nil
+	return 0, nil, nil
 }
 
 // New takes an io.Reader and creates a new CEDict instance.
