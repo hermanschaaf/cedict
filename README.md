@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/hermanschaaf/cedict.svg?branch=master)](https://travis-ci.org/hermanschaaf/cedict)
+
 [Documentation](https://godoc.org/github.com/hermanschaaf/cedict)
 
 CEDict Parser in Go
