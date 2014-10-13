@@ -36,6 +36,7 @@ package cedict
 
 import (
 	"bufio"
+	"bytes"
 	"errors"
 	"fmt"
 	"io"
@@ -59,10 +60,12 @@ type CEDict struct {
 
 // Entry represents a single entry in the cedict dictionary.
 type Entry struct {
-	Simplified  string
-	Traditional string
-	Pinyin      string
-	Definitions []string
+	Simplified      string
+	Traditional     string
+	Pinyin          string
+	PinyinWithTones string
+	PinyinNoTones   string
+	Definitions     []string
 }
 
 // consumeComment reads from the data byte slice until a new line is found,
@@ -122,6 +125,92 @@ func New(r io.Reader) *CEDict {
 	return c
 }
 
+// toneLookupTable returns a lookup table to replace a specified tone number with
+// its appropriate UTF-8 character with tone marks
+func toneLookupTable(tone int) (map[string]string, error) {
+	if tone < 0 || tone > 5 {
+		return nil, fmt.Errorf("Tried to create tone lookup table with tone %i", tone)
+	}
+
+	lookupTable := map[string][]string{
+		"a": []string{"a", "ā", "á", "ǎ", "à", "a"},
+		"e": []string{"e", "ē", "é", "ě", "è", "e"},
+		"i": []string{"i", "ī", "í", "ǐ", "ì", "i"},
+		"o": []string{"o", "ō", "ó", "ǒ", "ò", "o"},
+		"u": []string{"u", "ū", "ú", "ǔ", "ù", "u"},
+		"ü": []string{"ü", "ǖ", "ǘ", "ǚ", "ǜ", "ü"},
+	}
+
+	toneLookup := make(map[string]string)
+
+	for vowel, toneRunes := range lookupTable {
+		toneLookup[vowel] = toneRunes[tone]
+	}
+
+	return toneLookup, nil
+}
+
+// extractTone splits the tone number and the pinyin syllable returning a string
+// and an integer, e.g., dong1 => dong, 1
+func extractTone(p string) (string, int) {
+	tone := int(p[len(p)-1]) - 48
+
+	if tone < 0 || tone > 5 {
+		return p, 0
+	}
+	return p[0 : len(p)-1], tone
+}
+
+// replaceWithToneMark returns the UTF-8 representation of a pinyin syllable with
+// the appropriate tone, e.g., dong1 => dōng, using the pinyin accent placement rules
+func replaceWithToneMark(s string, tone int) (string, error) {
+	lookup, err := toneLookupTable(tone)
+	if err != nil {
+		return "", err
+	}
+
+	if strings.Contains(s, "a") {
+		return strings.Replace(s, "a", lookup["a"], -1), nil
+	}
+	if strings.Contains(s, "e") {
+		return strings.Replace(s, "e", lookup["e"], -1), nil
+	}
+	if strings.Contains(s, "ou") {
+		return strings.Replace(s, "o", lookup["o"], -1), nil
+	}
+	index := strings.LastIndexAny(s, "iüou")
+	if index != -1 {
+		var out bytes.Buffer
+		for ind, runeValue := range s {
+			if ind == index {
+				out.WriteString(lookup[string(runeValue)])
+			} else {
+				out.WriteString(string(runeValue))
+			}
+		}
+		return out.String(), nil
+	}
+	return "", fmt.Errorf("No tone match")
+}
+
+// convertToTones takes a CEDICT pinyin representation and returns the concatenated
+// pinyin version with tone marks, e.g., yi1 lan3 zi5 => yīlǎnzi
+func convertToTones(p string) string {
+	pv := strings.Replace(p, "u:", "ü", -1)
+	py := strings.Split(pv, " ")
+
+	var out bytes.Buffer
+	for _, pySyllable := range py {
+		pyNoTone, tone := extractTone(pySyllable)
+		pyWithTone, err := replaceWithToneMark(pyNoTone, tone)
+		if err != nil {
+			return ""
+		}
+		out.WriteString(pyWithTone)
+	}
+	return out.String()
+}
+
 var reEntry = regexp.MustCompile(`(?P<trad>\S*?) (?P<simp>\S*?) \[(?P<pinyin>.+)\] \/(?P<defs>.+)\/`)
 
 // parseEntry parses string entries from CEDict of the form:
@@ -150,6 +239,7 @@ func parseEntry(s string) (*Entry, error) {
 			e.Definitions = strings.Split(match[i], "/")
 		}
 	}
+	e.PinyinWithTones = convertToTones(e.Pinyin)
 	return &e, nil
 }
 

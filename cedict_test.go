@@ -47,19 +47,21 @@ func TestParseEntry(t *testing.T) {
 		{
 			give: "一之為甚 一之为甚 [yi1 zhi1 wei2 shen4] /Once is enough (idiom)/",
 			want: Entry{
-				Simplified:  "一之为甚",
-				Traditional: "一之為甚",
-				Pinyin:      "yi1 zhi1 wei2 shen4",
-				Definitions: []string{"Once is enough (idiom)"},
+				Simplified:      "一之为甚",
+				Traditional:     "一之為甚",
+				Pinyin:          "yi1 zhi1 wei2 shen4",
+				PinyinWithTones: "yīzhīwéishèn",
+				Definitions:     []string{"Once is enough (idiom)"},
 			},
 		},
 		{
 			give: "一壁 一壁 [yi1 bi4] /one side/at the same time/",
 			want: Entry{
-				Simplified:  "一壁",
-				Traditional: "一壁",
-				Pinyin:      "yi1 bi4",
-				Definitions: []string{"one side", "at the same time"},
+				Simplified:      "一壁",
+				Traditional:     "一壁",
+				Pinyin:          "yi1 bi4",
+				PinyinWithTones: "yībì",
+				Definitions:     []string{"one side", "at the same time"},
 			},
 		},
 	}
@@ -85,11 +87,11 @@ func TestCEDict(t *testing.T) {
 一攬子 一揽子 [yi1 lan3 zi5] /all-inclusive/undiscriminating/
 一東一西 一东一西 [yi1 dong1 yi1 xi1] /far apart/`
 	want := []Entry{
-		{Simplified: "一团火", Traditional: "一團火", Pinyin: "yi1 tuan2 huo3", Definitions: []string{"fireball", "ball of fire"}},
-		{Simplified: "一团", Traditional: "一團", Pinyin: "yi1 tuan2", Definitions: []string{"1 regiment"}},
-		{Simplified: "一层", Traditional: "一層", Pinyin: "yi1 ceng2", Definitions: []string{"layer"}},
-		{Simplified: "一揽子", Traditional: "一攬子", Pinyin: "yi1 lan3 zi5", Definitions: []string{"all-inclusive", "undiscriminating"}},
-		{Simplified: "一东一西", Traditional: "一東一西", Pinyin: "yi1 dong1 yi1 xi1", Definitions: []string{"far apart"}},
+		{Simplified: "一团火", Traditional: "一團火", Pinyin: "yi1 tuan2 huo3", PinyinWithTones: "yītuánhuǒ", Definitions: []string{"fireball", "ball of fire"}},
+		{Simplified: "一团", Traditional: "一團", Pinyin: "yi1 tuan2", PinyinWithTones: "yītuán", Definitions: []string{"1 regiment"}},
+		{Simplified: "一层", Traditional: "一層", Pinyin: "yi1 ceng2", PinyinWithTones: "yīcéng", Definitions: []string{"layer"}},
+		{Simplified: "一揽子", Traditional: "一攬子", Pinyin: "yi1 lan3 zi5", PinyinWithTones: "yīlǎnzi", Definitions: []string{"all-inclusive", "undiscriminating"}},
+		{Simplified: "一东一西", Traditional: "一東一西", Pinyin: "yi1 dong1 yi1 xi1", PinyinWithTones: "yīdōngyīxī", Definitions: []string{"far apart"}},
 	}
 	r := io.Reader(strings.NewReader(raw))
 	c := New(r)
