@@ -211,6 +211,23 @@ func convertToTones(p string) string {
 	return out.String()
 }
 
+// pinyinNoTones takes a CEDICT pinyin representation and returns the concatenated
+// pinyin version without tone marks, e.g., yi1 lan3 zi5 => yilanzi
+// This representation is useful for building a search interface to the CEDICT database
+// for user pinyin input.
+// Note: This substitutes the more common search term "v" for "ü"
+func pinyinNoTones(p string) string {
+	pv := strings.Replace(p, "u:", "v", -1)
+	py := strings.Split(pv, " ")
+
+	var out bytes.Buffer
+	for _, pySyllable := range py {
+		pyNoTone, _ := extractTone(pySyllable)
+		out.WriteString(pyNoTone)
+	}
+	return out.String()
+}
+
 var reEntry = regexp.MustCompile(`(?P<trad>\S*?) (?P<simp>\S*?) \[(?P<pinyin>.+)\] \/(?P<defs>.+)\/`)
 
 // parseEntry parses string entries from CEDict of the form:
@@ -240,6 +257,7 @@ func parseEntry(s string) (*Entry, error) {
 		}
 	}
 	e.PinyinWithTones = convertToTones(e.Pinyin)
+	e.PinyinNoTones = pinyinNoTones(e.Pinyin)
 	return &e, nil
 }
 

@@ -51,6 +51,7 @@ func TestParseEntry(t *testing.T) {
 				Traditional:     "一之為甚",
 				Pinyin:          "yi1 zhi1 wei2 shen4",
 				PinyinWithTones: "yīzhīwéishèn",
+				PinyinNoTones:   "yizhiweishen",
 				Definitions:     []string{"Once is enough (idiom)"},
 			},
 		},
@@ -61,6 +62,7 @@ func TestParseEntry(t *testing.T) {
 				Traditional:     "一壁",
 				Pinyin:          "yi1 bi4",
 				PinyinWithTones: "yībì",
+				PinyinNoTones:   "yibi",
 				Definitions:     []string{"one side", "at the same time"},
 			},
 		},
@@ -87,11 +89,11 @@ func TestCEDict(t *testing.T) {
 一攬子 一揽子 [yi1 lan3 zi5] /all-inclusive/undiscriminating/
 一東一西 一东一西 [yi1 dong1 yi1 xi1] /far apart/`
 	want := []Entry{
-		{Simplified: "一团火", Traditional: "一團火", Pinyin: "yi1 tuan2 huo3", PinyinWithTones: "yītuánhuǒ", Definitions: []string{"fireball", "ball of fire"}},
-		{Simplified: "一团", Traditional: "一團", Pinyin: "yi1 tuan2", PinyinWithTones: "yītuán", Definitions: []string{"1 regiment"}},
-		{Simplified: "一层", Traditional: "一層", Pinyin: "yi1 ceng2", PinyinWithTones: "yīcéng", Definitions: []string{"layer"}},
-		{Simplified: "一揽子", Traditional: "一攬子", Pinyin: "yi1 lan3 zi5", PinyinWithTones: "yīlǎnzi", Definitions: []string{"all-inclusive", "undiscriminating"}},
-		{Simplified: "一东一西", Traditional: "一東一西", Pinyin: "yi1 dong1 yi1 xi1", PinyinWithTones: "yīdōngyīxī", Definitions: []string{"far apart"}},
+		{Simplified: "一团火", Traditional: "一團火", Pinyin: "yi1 tuan2 huo3", PinyinWithTones: "yītuánhuǒ", PinyinNoTones: "yituanhuo", Definitions: []string{"fireball", "ball of fire"}},
+		{Simplified: "一团", Traditional: "一團", Pinyin: "yi1 tuan2", PinyinWithTones: "yītuán", PinyinNoTones: "yituan", Definitions: []string{"1 regiment"}},
+		{Simplified: "一层", Traditional: "一層", Pinyin: "yi1 ceng2", PinyinWithTones: "yīcéng", PinyinNoTones: "yiceng", Definitions: []string{"layer"}},
+		{Simplified: "一揽子", Traditional: "一攬子", Pinyin: "yi1 lan3 zi5", PinyinWithTones: "yīlǎnzi", PinyinNoTones: "yilanzi", Definitions: []string{"all-inclusive", "undiscriminating"}},
+		{Simplified: "一东一西", Traditional: "一東一西", Pinyin: "yi1 dong1 yi1 xi1", PinyinWithTones: "yīdōngyīxī", PinyinNoTones: "yidongyixi", Definitions: []string{"far apart"}},
 	}
 	r := io.Reader(strings.NewReader(raw))
 	c := New(r)
