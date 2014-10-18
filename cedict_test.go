@@ -30,11 +30,11 @@ func ExampleCEDict() {
 		// get current entry
 		entry := c.Entry()
 		// print out some fields
-		fmt.Println(entry.Simplified, entry.Definitions[0])
+		fmt.Printf("%s\t(%s)\t%s\n", entry.Simplified, entry.PinyinWithTones, entry.Definitions[0])
 	}
 	// Output:
-	// 一层 layer
-	// 一揽子 all-inclusive
+	// 一层	(yīcéng)	layer
+	// 一揽子	(yīlǎnzi)	all-inclusive
 }
 
 // TestParseEntry tests the parsing of individual entries, and checks that
