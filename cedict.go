@@ -251,7 +251,7 @@ func parseEntry(s string) (*Entry, error) {
 		case "trad":
 			e.Traditional = match[i]
 		case "pinyin":
-			e.Pinyin = strings.ToLower(match[i])
+			e.Pinyin = match[i]
 		case "defs":
 			e.Definitions = strings.Split(match[i], "/")
 		}
