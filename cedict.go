@@ -193,9 +193,12 @@ func replaceWithToneMark(s string, tone int) (string, error) {
 	return "", fmt.Errorf("No tone match")
 }
 
-// convertToTones takes a CEDICT pinyin representation and returns the concatenated
-// pinyin version with tone marks, e.g., yi1 lan3 zi5 => yīlǎnzi
-func convertToTones(p string) string {
+// ToPinyinTonemarks takes a CEDICT pinyin representation and returns the concatenated
+// pinyin version with tone marks, e.g., yi1 lan3 zi5 => yīlǎnzi. This function
+// is useful for customizing pinyin conversion for your own application. For example,
+// if you wish to get the tone pinyin of each character, you may pass in each
+// section of the original word separately, as in yi1 => yī, lan3 => lǎn, zi5 => zi.
+func ToPinyinTonemarks(p string) string {
 	pv := strings.Replace(p, "u:", "ü", -1)
 	py := strings.Split(pv, " ")
 
@@ -251,12 +254,12 @@ func parseEntry(s string) (*Entry, error) {
 		case "trad":
 			e.Traditional = match[i]
 		case "pinyin":
-			e.Pinyin = strings.ToLower(match[i])
+			e.Pinyin = match[i]
 		case "defs":
 			e.Definitions = strings.Split(match[i], "/")
 		}
 	}
-	e.PinyinWithTones = convertToTones(e.Pinyin)
+	e.PinyinWithTones = ToPinyinTonemarks(e.Pinyin)
 	e.PinyinNoTones = pinyinNoTones(e.Pinyin)
 	return &e, nil
 }
