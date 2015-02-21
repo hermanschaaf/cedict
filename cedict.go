@@ -207,9 +207,10 @@ func ToPinyinTonemarks(p string) string {
 		pyNoTone, tone := extractTone(pySyllable)
 		pyWithTone, err := replaceWithToneMark(pyNoTone, tone)
 		if err != nil {
-			return ""
+			out.WriteString(pySyllable)
+		} else {
+			out.WriteString(pyWithTone)
 		}
-		out.WriteString(pyWithTone)
 	}
 	return out.String()
 }

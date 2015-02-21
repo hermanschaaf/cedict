@@ -66,6 +66,17 @@ func TestParseEntry(t *testing.T) {
 				Definitions:     []string{"one side", "at the same time"},
 			},
 		},
+		{
+			give: "眼不見，心不煩 眼不见，心不烦 [yan3 bu4 jian4 , xin1 bu4 fan2] /what the eye doesn't see, the heart doesn't grieve over (idiom)/",
+			want: Entry{
+				Simplified:      "眼不见，心不烦",
+				Traditional:     "眼不見，心不煩",
+				Pinyin:          "yan3 bu4 jian4 , xin1 bu4 fan2",
+				PinyinWithTones: "yǎnbùjiàn,xīnbùfán",
+				PinyinNoTones:   "yanbujian,xinbufan",
+				Definitions:     []string{"what the eye doesn't see, the heart doesn't grieve over (idiom)"},
+			},
+		},
 	}
 	for _, tt := range tests {
 		got, err := parseEntry(tt.give)
@@ -116,6 +127,22 @@ func TestCEDict(t *testing.T) {
 	for i := range entries {
 		if !reflect.DeepEqual(entries[i], want[i]) {
 			t.Errorf("CEDict.Entry():\ngot\t%v,\nwant\t%v", entries[i], want[i])
+		}
+	}
+}
+
+func TestToPinyinTonemarks(t *testing.T) {
+	tests := []struct {
+		s    string
+		want string
+	}{
+		{s: "yi1 lan3 zi5", want: "yīlǎnzi"},
+		{s: "yan3 bu4 jian4 , xin1 bu4 fan2", want: "yǎnbùjiàn,xīnbùfán"},
+	}
+	for _, tt := range tests {
+		got := ToPinyinTonemarks(tt.s)
+		if got != tt.want {
+			t.Errorf("ToPinyinTonemarks(%q) = %q, want %q", tt.s, got, tt.want)
 		}
 	}
 }
