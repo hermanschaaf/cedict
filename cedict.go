@@ -112,6 +112,9 @@ func New(r io.Reader) *CEDict {
 	}
 	// splitFunc defines how we split our tokens
 	splitFunc := func(data []byte, atEOF bool) (advance int, token []byte, err error) {
+		if len(data) == 0 {
+			return
+		}
 		if data[0] == '#' {
 			advance, token, err = consumeComment(data, atEOF)
 			c.TokenType = CommentToken
